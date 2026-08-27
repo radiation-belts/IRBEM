@@ -14,8 +14,8 @@ FC = gfortran
 CC = gcc
 LD = gfortran
 
-FFLAGS=-fpic -fno-second-underscore -std=legacy -ffixed-line-length-none -Wl,--add-stdcall-alias -fno-second-underscore -w -m32
-CFLAGS=-fpic
+FFLAGS=-fpic -fno-second-underscore -std=legacy -ffixed-line-length-none -Wl,--add-stdcall-alias -fno-second-underscore -w -m32 -O2 -march=native
+CFLAGS=-fpic -O2 -march=native
 LDFLAGS=-shared
 
 COMPILE_LIB_NAME=libirbem.$(OS).$(ENV).dll
