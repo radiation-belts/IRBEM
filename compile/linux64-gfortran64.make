@@ -10,9 +10,9 @@
 #     INSTALL_LIB_NAME : Name of the installed library file
 #------------------------------------------------------------------------------
 
-FC = gfortran
+FC := $(shell bash -c "compgen -c gfortran | sort -V | tail -n1")
 CC = gcc
-LD = gfortran
+LD := $(FC)
 
 FFLAGS=-fpic -fno-second-underscore -std=legacy -ffixed-line-length-none -O2 -march=native
 CFLAGS=-fpic -O2 -march=native
