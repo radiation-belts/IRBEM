@@ -896,6 +896,7 @@ c
       common /rconst/rad,pi
       COMMON /a2000_time/a2000_ut,a2000_iyear,a2000_imonth,a2000_iday
 
+      CALL sksyst_reset
       iyear = 1800
 
       if (kint .eq. 2) CALL JensenANDCain1960
@@ -1045,6 +1046,7 @@ c
 c make inputs according to magn. field model chosen
 c
 c     set fail flag 'on' by default
+      CALL sksyst_reset
          ifail = -1
 c     clear it if all tests for respective selection are ok
 c

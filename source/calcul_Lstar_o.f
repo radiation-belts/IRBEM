@@ -518,13 +518,32 @@ C
         REAL*8 h
         REAL*8 xwrk(4,3)
 C
+C FSAL cache (el_paso patch).  RK4 uses four stage evaluations, none of
+C them at the step endpoint, so the trailing CHAMP(x2,...) below is a
+C fifth evaluation made solely to hand Bl back to the caller.  Every
+C tracing loop then copies x2 into x1 and re-enters here, recomputing
+C that same point as stage 1.  Reuse it instead when the entry point is
+C bit-identical to the cached endpoint: CHAMP is a pure function of
+C position for a fixed field state, so the reused value matches a
+C recomputed one exactly.  sksyst_reset drops the cache when that state
+C changes.
+        REAL*8 ckx(3),ckB(3),ckBl
+        INTEGER*4 ckvalid
+        COMMON /sksyst_fsal/ckx,ckB,ckBl,ckvalid
+C
 C-----------------------------------------------------------------------
 C
-c        write(6,*)'sksyst'
-c        write(6,*)xx(1),xx(2),xx(3),h
-        CALL CHAMP(xx,B,Bl,Ifail)
-c	write(6,*)xx,B,Bl,Ifail
-	IF (Ifail.LT.0) RETURN
+        IF (ckvalid.EQ.1 .AND. xx(1).EQ.ckx(1) .AND. xx(2).EQ.ckx(2)
+     &      .AND. xx(3).EQ.ckx(3)) THEN
+          B(1) = ckB(1)
+          B(2) = ckB(2)
+          B(3) = ckB(3)
+          Bl = ckBl
+          Ifail = 0
+        ELSE
+          CALL CHAMP(xx,B,Bl,Ifail)
+          IF (Ifail.LT.0) RETURN
+        ENDIF
 c        write(6,*)'b',B(1),B(2),B(3),Bl
         xwrk(1,1) = h*B(1)/Bl
         xwrk(1,2) = h*B(2)/Bl
@@ -569,10 +588,31 @@ C
         x2(3) = xx(3)+(   xwrk(1,3)+2.D0*xwrk(2,3)
      &               + 2.D0*xwrk(3,3)+   xwrk(4,3))/6.D0
         CALL CHAMP(x2,B,Bl,Ifail)
-	IF (Ifail.LT.0) RETURN
-c        write(6,*)x2(1),x2(2),x2(3),Bl
-c        read(5,*)
+        IF (Ifail.LT.0) THEN
+          ckvalid = 0
+          RETURN
+        ENDIF
+        ckx(1) = x2(1)
+        ckx(2) = x2(2)
+        ckx(3) = x2(3)
+        ckB(1) = B(1)
+        ckB(2) = B(2)
+        ckB(3) = B(3)
+        ckBl = Bl
+        ckvalid = 1
 C
+        RETURN
+        END
+C
+C Invalidate the FSAL cache (el_paso patch).  Called whenever the field
+C state CHAMP depends on so a bit-identical position can never return a 
+C field computed under the previous state.
+        SUBROUTINE sksyst_reset
+        IMPLICIT NONE
+        REAL*8 ckx(3),ckB(3),ckBl
+        INTEGER*4 ckvalid
+        COMMON /sksyst_fsal/ckx,ckB,ckBl,ckvalid
+        ckvalid = 0
         RETURN
         END
         SUBROUTINE sksyst2(h,xx,x2,Bl,Ifail)
