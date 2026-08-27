@@ -5,6 +5,7 @@
 source/*.o
 source/wrappers.inc
 source/fortran_*.inc
+source/ntime_max.inc
 libirbem.so
 __pycache__
 settings.json
