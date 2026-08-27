@@ -123,7 +123,7 @@ Make Variables
 				  Produce ELF 64-bit MSB dynamic lib.
 
      IRBEM_NTIME_MAX=<ntime_max>
-	ntime_max is a 32-bit integer (signed, but should be positive). Default is 100000.
+	ntime_max is a 32-bit integer (signed, but should be positive). Default is 1000000.
 	It controls the length of the time dimension in pre-allocated arrays in many functions.
 
 Examples
