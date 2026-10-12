@@ -15,8 +15,8 @@ FC := $(shell bash -c "compgen -c gfortran | sort -V | tail -n1")
 CC = gcc
 LD := $(FC)
 
-FFLAGS=-fpic -fno-second-underscore -std=legacy -ffixed-line-length-none -O2 -march=native
-CFLAGS=-fpic -O2 -march=native
+FFLAGS=-fpic -fno-second-underscore -std=legacy -ffixed-line-length-none -O2
+CFLAGS=-fpic -O2
 LDFLAGS=-shared
 
 COMPILE_LIB_NAME=libirbem.$(OS).$(ENV).so
