@@ -451,7 +451,13 @@ C
          Bl13 = Bl3
         ENDDO
 205     CONTINUE
-        IF (J .EQ. Nrebmax+1) GOTO 303
+        IF (J .EQ. Nrebmax+1) THEN
+C Second B0 crossing not found: the drift shell is only traced up to
+C sector I, so tet/phi of the remaining sectors are stale (tet is in
+C COMMON /calotte/) or unset. Leave Lstar as baddata.
+          Ilflag = 0
+          RETURN
+        ENDIF
         ds3 = dsreb*(B0-Bl13)/(Bl3-Bl13)
         CALL sksyst(ds3,x13,x3,Bl3,Ifail)
         rr32  = x3(1)*x3(1)+x3(2)*x3(2)+x3(3)*x3(3)
